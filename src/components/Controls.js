@@ -1,12 +1,22 @@
 import React from "react";
 import "./Controls.css";
-function Controls({ reset, score, location, roundCounter }) {
+function Controls({
+  reset,
+  score,
+  location,
+  roundCounter,
+  hintSetter,
+  highScore,
+}) {
   return (
     <div className='controls'>
-      <h1>תוצאה: {score}</h1>
+      <h1>מרחק ממטרות: {score} קילומטרים</h1>
       <h2>המטרה: {location}</h2>
       <h2>תור מספר: {roundCounter + 1}</h2>
-      <button className='hint-btn'>רמז</button>
+      {highScore && <h2>תוצאה מירבית: {highScore}</h2>}
+      <button className='hint-btn' onClick={() => hintSetter((prev) => !prev)}>
+        רמז
+      </button>
       <button
         className='next-turn-btn'
         onClick={

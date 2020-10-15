@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Map, GoogleApiWrapper, InfoWindow, Marker } from "google-maps-react";
+import {
+  Map,
+  GoogleApiWrapper,
+  InfoWindow,
+  Marker,
+  Circle,
+} from "google-maps-react";
 import locations from "./Data/yeshuvim.json";
 import Swal from "sweetalert2";
 import greenMarker from "./Data/green-marker.png";
@@ -53,6 +59,8 @@ function MapField(props) {
   const [randomLocation, setRandomLocation] = useState({});
   const [chosenLocation, setChosenLocation] = useState({});
   const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(null);
+  const [hint, setHint] = useState(false);
   const [roundCounter, setRoundCounter] = useState(0);
   const [showCorrectLocation, setShowCorrectLocation] = useState(false);
 
@@ -70,13 +78,23 @@ function MapField(props) {
     });
   }, []);
 
+  useEffect(() => {
+    const isHighScore = localStorage.getItem("highScore");
+    isHighScore && setHighScore(isHighScore);
+  }, []);
+
   const resetMap = useCallback(
     (e, ended = false) => {
       if (showCorrectLocation || ended) {
+        setHint(false);
         setRoundCounter((prev) => prev + 1);
         setShowCorrectLocation(false);
         setChosenLocation({});
         if (ended) {
+          if (score < highScore || !highScore) {
+            setHighScore(score);
+            localStorage.setItem("highScore", score);
+          }
           Swal.fire("סיימת את הסיבוב").then(startRound());
           setScore(0);
           setRoundCounter(0);
@@ -106,10 +124,12 @@ function MapField(props) {
   return (
     <div>
       <Controls
+        highScore={highScore}
         reset={resetMap}
         score={score}
         location={randomLocation.name}
         roundCounter={roundCounter}
+        hintSetter={setHint}
       />
       <Map
         onClick={(e, b, c) => {
@@ -175,6 +195,21 @@ function MapField(props) {
             <h4>{selectedPlace.name}</h4>
           </div>
         </InfoWindow>
+        {hint && (
+          <Circle
+            radius={100200}
+            center={{
+              lat: randomLocation.lat + Math.random() / 1.6,
+              lng: randomLocation.lng + Math.random() / 1.6,
+            }}
+            clickable={false}
+            strokeColor='transparent'
+            strokeOpacity={1}
+            strokeWeight={5}
+            fillColor='#FF0000'
+            fillOpacity={0.2}
+          />
+        )}
       </Map>
     </div>
   );
