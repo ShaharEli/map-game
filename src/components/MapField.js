@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Map, GoogleApiWrapper, InfoWindow, Marker } from "google-maps-react";
 import locations from "./Data/yeshuvim.json";
+import Swal from "sweetalert2";
 
 const mapStyles = {
   width: "100%",
@@ -29,14 +30,8 @@ function MapField(props) {
   const [activeMarker, setActiveMarker] = useState({}); // Shows the active marker upon click
   const [selectedPlace, setSelectedPlace] = useState({}); // Shows the InfoWindow to the selected place upon a marker
   const [randomLocation, setRandomLocation] = useState({});
-  const [chosenLocation, setChosenLocation] = useState({
-    lat: 31.46667,
-    lng: 34.783333,
-  });
-
-  useEffect(() => {
-    setRandomLocation(getRandomLocation());
-  }, []);
+  const [chosenLocation, setChosenLocation] = useState({});
+  const [showCorrectLocation, setShowCorrectLocation] = useState(false);
 
   const onMarkerClick = (props, marker, e) => {
     setShowingInfoWindow(true);
@@ -59,6 +54,7 @@ function MapField(props) {
             lat: c.latLng.lat(),
             lng: c.latLng.lng(),
           });
+          setShowCorrectLocation(true);
         }}
         google={props.google}
         zoom={7.4}
@@ -67,13 +63,38 @@ function MapField(props) {
           lat: 31.46667,
           lng: 34.783333,
         }}
-        onReady={(mapProps, map) => _mapLoaded(mapProps, map)}
+        onReady={(mapProps, map) => {
+          _mapLoaded(mapProps, map);
+          let checkerForLocation = "";
+          let location = getRandomLocation();
+          while (checkerForLocation.length === 0) {
+            location = getRandomLocation();
+            checkerForLocation = location.MGLSDE_LOC;
+          }
+          setRandomLocation({
+            lng: location.X,
+            lat: location.Y,
+          });
+
+          setTimeout(
+            () => Swal.fire(":האם תמצא את", location.MGLSDE_LOC, "question"),
+            1500
+          );
+        }}
       >
         <Marker
           position={chosenLocation}
           onClick={onMarkerClick}
           name={"Kenyatta International Convention Centre"}
         />
+        {showCorrectLocation && (
+          <Marker
+            position={randomLocation}
+            visible={true}
+            onClick={onMarkerClick}
+            name={"Kenyatta International Convention Centre"}
+          />
+        )}
         <InfoWindow
           marker={activeMarker}
           visible={showingInfoWindow}
