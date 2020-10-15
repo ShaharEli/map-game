@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Map, GoogleApiWrapper, InfoWindow, Marker } from "google-maps-react";
 import locations from "./Data/yeshuvim.json";
 import Swal from "sweetalert2";
 import greenMarker from "./Data/green-marker.png";
+import Controls from "./Controls";
 
 const mapStyles = {
   width: "100%",
@@ -51,7 +52,36 @@ function MapField(props) {
   const [selectedPlace, setSelectedPlace] = useState({}); // Shows the InfoWindow to the selected place upon a marker
   const [randomLocation, setRandomLocation] = useState({});
   const [chosenLocation, setChosenLocation] = useState({});
+  const [score, setScore] = useState(0);
   const [showCorrectLocation, setShowCorrectLocation] = useState(false);
+
+  const startRound = useCallback(() => {
+    let checkerForLocation = "";
+    let location = getRandomLocation();
+    while (checkerForLocation.length === 0) {
+      location = getRandomLocation();
+      checkerForLocation = location.MGLSDE_LOC;
+    }
+    setRandomLocation({
+      lng: location.X,
+      lat: location.Y,
+      name: location.MGLSDE_LOC,
+    });
+    setTimeout(
+      () => Swal.fire(":האם תמצא את", location.MGLSDE_LOC, "question"),
+      1000
+    );
+  }, []);
+
+  const resetMap = useCallback(() => {
+    if (showCorrectLocation) {
+      setShowCorrectLocation(false);
+      setChosenLocation({});
+      startRound();
+    } else {
+      Swal.fire("טעות", "סיים את הסיבוב לפני מעבר לסיבוב הבא", "error");
+    }
+  }, [showCorrectLocation]);
 
   const onMarkerClick = (props, marker, e) => {
     setShowingInfoWindow(true);
@@ -68,28 +98,38 @@ function MapField(props) {
 
   return (
     <div>
+      <Controls reset={resetMap} score={score} location={randomLocation.name} />
       <Map
         onClick={(e, b, c) => {
-          setChosenLocation({
-            lat: c.latLng.lat(),
-            lng: c.latLng.lng(),
-          });
-          setShowCorrectLocation(true);
-          let distance = getDistanceFromLatLonInKm(
-            c.latLng.lat(),
-            c.latLng.lng(),
-            randomLocation.lat,
-            randomLocation.lng
-          );
-          distance = Math.round(distance);
-          if (distance < 20) {
-            Swal.fire(
-              "You got it",
-              `${distance} KM far from target`,
-              "success"
+          if (!showCorrectLocation) {
+            setChosenLocation({
+              lat: c.latLng.lat(),
+              lng: c.latLng.lng(),
+            });
+            let distance = getDistanceFromLatLonInKm(
+              c.latLng.lat(),
+              c.latLng.lng(),
+              randomLocation.lat,
+              randomLocation.lng
             );
+            distance = Math.round(distance);
+            setScore((prev) => prev + distance);
+            setShowCorrectLocation(true);
+            if (distance < 20) {
+              Swal.fire(
+                "You got it",
+                `${distance} KM far from target`,
+                "success"
+              );
+            } else {
+              Swal.fire(
+                "טעות",
+                "המרחק שלך בקילומטרים מהמטרה היה: " + String(distance),
+                "error"
+              );
+            }
           } else {
-            Swal.fire("Fail", `${distance} KM far from target`, "error");
+            Swal.fire("שיחקת כבר", "אנא המשך לתור הבא", "error");
           }
         }}
         google={props.google}
@@ -101,22 +141,7 @@ function MapField(props) {
         }}
         onReady={(mapProps, map) => {
           _mapLoaded(mapProps, map);
-          let checkerForLocation = "";
-          let location = getRandomLocation();
-          while (checkerForLocation.length === 0) {
-            location = getRandomLocation();
-            checkerForLocation = location.MGLSDE_LOC;
-          }
-          setRandomLocation({
-            lng: location.X,
-            lat: location.Y,
-            name: location.MGLSDE_LOC,
-          });
-
-          setTimeout(
-            () => Swal.fire(":האם תמצא את", location.MGLSDE_LOC, "question"),
-            1500
-          );
+          startRound();
         }}
       >
         <Marker position={chosenLocation} />

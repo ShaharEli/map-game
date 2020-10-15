@@ -1,0 +1,33 @@
+.controls {
+  position: absolute;
+  width: 25vw;
+  top: 10vh;
+  left: 20px;
+  height: 30vh;
+  z-index: 2;
+  min-width: 300px;
+  background-color: brown;
+  text-align: center;
+}
+
+@media only screen and (max-width: 700px) {
+  .controls {
+    min-width: 200px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .controls {
+    min-width: 150px;
+  }
+}
+@media only screen and (max-width: 400px) {
+  .controls {
+    min-width: 100px;
+  }
+}
+@media only screen and (max-width: 270px) {
+  .controls {
+    left: 0;
+  }
+}
