@@ -3,11 +3,40 @@
   width: 25vw;
   top: 10vh;
   left: 20px;
-  height: 30vh;
+  height: 40vh;
   z-index: 2;
   min-width: 300px;
-  background-color: brown;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid black;
   text-align: center;
+  font-size: 15px;
+}
+.next-turn-btn {
+  background-color: cornflowerblue;
+  border: none;
+  height: 35px;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  transition: 100ms;
+  font-size: 15px;
+}
+.next-turn-btn:hover {
+  background-color: rgb(96, 125, 180);
+}
+
+.hint-btn {
+  background-color: darkcyan;
+  border: none;
+  height: 35px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: 100ms;
+  font-size: 15px;
+}
+.hint-btn:hover {
+  background-color: rgb(61, 150, 150);
 }
 
 @media only screen and (max-width: 700px) {

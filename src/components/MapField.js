@@ -53,6 +53,7 @@ function MapField(props) {
   const [randomLocation, setRandomLocation] = useState({});
   const [chosenLocation, setChosenLocation] = useState({});
   const [score, setScore] = useState(0);
+  const [roundCounter, setRoundCounter] = useState(0);
   const [showCorrectLocation, setShowCorrectLocation] = useState(false);
 
   const startRound = useCallback(() => {
@@ -67,21 +68,27 @@ function MapField(props) {
       lat: location.Y,
       name: location.MGLSDE_LOC,
     });
-    setTimeout(
-      () => Swal.fire(":האם תמצא את", location.MGLSDE_LOC, "question"),
-      1000
-    );
   }, []);
 
-  const resetMap = useCallback(() => {
-    if (showCorrectLocation) {
-      setShowCorrectLocation(false);
-      setChosenLocation({});
-      startRound();
-    } else {
-      Swal.fire("טעות", "סיים את הסיבוב לפני מעבר לסיבוב הבא", "error");
-    }
-  }, [showCorrectLocation]);
+  const resetMap = useCallback(
+    (e, ended = false) => {
+      if (showCorrectLocation || ended) {
+        setRoundCounter((prev) => prev + 1);
+        setShowCorrectLocation(false);
+        setChosenLocation({});
+        if (ended) {
+          Swal.fire("סיימת את הסיבוב").then(startRound());
+          setScore(0);
+          setRoundCounter(0);
+        } else {
+          startRound();
+        }
+      } else {
+        Swal.fire("טעות", "סיים את הסיבוב לפני מעבר לסיבוב הבא", "error");
+      }
+    },
+    [showCorrectLocation]
+  );
 
   const onMarkerClick = (props, marker, e) => {
     setShowingInfoWindow(true);
@@ -98,7 +105,12 @@ function MapField(props) {
 
   return (
     <div>
-      <Controls reset={resetMap} score={score} location={randomLocation.name} />
+      <Controls
+        reset={resetMap}
+        score={score}
+        location={randomLocation.name}
+        roundCounter={roundCounter}
+      />
       <Map
         onClick={(e, b, c) => {
           if (!showCorrectLocation) {
@@ -117,8 +129,8 @@ function MapField(props) {
             setShowCorrectLocation(true);
             if (distance < 20) {
               Swal.fire(
-                "You got it",
-                `${distance} KM far from target`,
+                "מעולה",
+                "המרחק שלך בקילומטרים מהמטרה היה: " + String(distance),
                 "success"
               );
             } else {
