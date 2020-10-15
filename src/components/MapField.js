@@ -88,10 +88,16 @@ function MapField(props) {
           if (score < highScore || !highScore) {
             setHighScore(score);
             localStorage.setItem("highScore", score);
+            Swal.fire("וואו", "שיא חדש", "success").then(() =>
+              Swal.fire("סיימת את הסיבוב").then(startRound())
+            );
+            setScore(0);
+            setRoundCounter(0);
+          } else {
+            Swal.fire("סיימת את הסיבוב").then(startRound());
+            setScore(0);
+            setRoundCounter(0);
           }
-          Swal.fire("סיימת את הסיבוב").then(startRound());
-          setScore(0);
-          setRoundCounter(0);
         } else {
           startRound();
         }

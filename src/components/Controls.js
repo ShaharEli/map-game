@@ -12,7 +12,7 @@ function Controls({
     <div className='controls'>
       <h1>מרחק ממטרות: {score} קילומטרים</h1>
       <h2>המטרה: {location}</h2>
-      <h2>תור מספר: {roundCounter + 1}</h2>
+      <h2>תור מספר: {roundCounter + 1}/5</h2>
       {highScore && <h2>תוצאה מירבית: {highScore}</h2>}
       <button className='hint-btn' onClick={() => hintSetter((prev) => !prev)}>
         רמז
