@@ -9,6 +9,7 @@ import {
 import locations from "./Data/yeshuvim.json";
 import Swal from "sweetalert2";
 import greenMarker from "./Data/green-marker.png";
+import mapStyle from "./Data/mapStyle";
 import Controls from "./Controls";
 
 const mapStyles = {
@@ -19,13 +20,6 @@ const mapStyles = {
 const getRandomLocation = () => {
   return locations[Math.floor(Math.random() * locations.length)];
 };
-const mapStyle = [
-  {
-    featureType: "all",
-    elementType: "labels",
-    stylers: [{ visibility: "off" }],
-  },
-];
 
 const _mapLoaded = (mapProps, map) => {
   map.setOptions({
@@ -105,7 +99,7 @@ function MapField(props) {
         Swal.fire("טעות", "סיים את הסיבוב לפני מעבר לסיבוב הבא", "error");
       }
     },
-    [showCorrectLocation]
+    [showCorrectLocation, highScore, score, startRound]
   );
 
   const onMarkerClick = (props, marker, e) => {
