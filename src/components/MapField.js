@@ -122,7 +122,7 @@ function MapField(props) {
   };
 
   return (
-    <div>
+    <div className='map-container'>
       <Controls
         highScore={highScore}
         reset={resetMap}
