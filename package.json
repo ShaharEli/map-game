@@ -6,12 +6,17 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "fs": "0.0.1-security",
     "google-maps-react": "^2.0.6",
+    "istorexit": "^0.10.1",
+    "public-ip": "^4.0.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-draggable": "^4.4.3",
     "react-scripts": "3.4.3",
-    "sweetalert2": "^10.5.1"
+    "sweetalert2": "^10.5.1",
+    "tor-detect": "^1.0.7",
+    "tor-test": "^0.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
